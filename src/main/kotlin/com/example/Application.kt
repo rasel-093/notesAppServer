@@ -6,8 +6,10 @@ import com.example.data.model.User
 import com.example.plugins.*
 import com.example.repository.DatabaseFactory
 import com.example.repository.UserRepo
+import com.example.routes.noteRoutes
 import com.example.routes.userRoutes
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
@@ -23,12 +25,17 @@ fun Application.module() {
         s: String -> hash(s)
     }
     configureSerialization()
-    configureSecurity()
+    configureSecurity(jwtService, db)
     configureRouting()
     configureLocation()
 
     routing {
         userRoutes(db,jwtService,hashFunction)
+        noteRoutes(db, hashFunction)
+
+
+
+
         get("/") { call.respondText("Hello") }
         get("/token"){
             val email = call.request.queryParameters["email"]
